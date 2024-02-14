@@ -1,7 +1,7 @@
 """
     This program converts user input (binary, decimal) numbers to other base equals
     octal, hexadecimal, or binary / decimal dependant on input 
-    Authors: Esteban Madrigal, Edgard Perez, Jacob Bueno
+    Authors: Esteban Madrigal, Edgard Jara, Jacob Bueno
 """
 from cgi import MiniFieldStorage
 import math
@@ -85,7 +85,11 @@ def bin_to_octal(binary: str) -> str:
         octal_num += str(deci_val)
 
     # return computed octal
-    return octal_num + "." + bin_oct_helper(new_bin[1])
+    if (len(new_bin) > 1):
+        return octal_num + "." + bin_oct_helper(new_bin[1])
+    else: 
+        # binary has no decimal
+        return octal_num
 
 def bin_oct_helper(bin_fraction) -> str:
     octal_fract = ""
@@ -110,17 +114,116 @@ def bin_oct_helper(bin_fraction) -> str:
 def bin_to_deci(binary):
     """
         returns decimal equivalent
-        Author: 
+        Author: Edgard Jara
     """
+    # first we need to create the decimal point variable
+    deci_point = "."
+  
+    # if the binary number is a float, we need to split it into two parts 
+    if (deci_point in binary):
+        solid, partial = binary.split(deci_point)
+        a = bin_whole_helper(solid)
+        b = bin_fract_helper(partial)
+        return a + b
+    else:
+        c = bin_whole_helper(binary)
+    return c
 
 
+def bin_fract_helper(fraction):
+  #this function will take the fractional part of the binary number and convert it to a decimal
+  
+  # create a variable to store the decimal value
+  fract = 0
+
+  # we need to loop through the fractional part of the binary number and store the decimal value
+  for place, number in enumerate(fraction):
+    fract +=int(number)*2**(-(place+1))
+  return fract
+  
+def bin_whole_helper(whole):
+  # this function will take the whole part of the binary number and convert it to a decimal
+
+  # create variables to store decimal value and a counter
+  deci= 0
+  count= 0
+
+  # loop through the whole part of the binary number and store the decimal value
+  for num in reversed(whole):
+      deci += 2**count * int(num)
+      count += 1
+  return deci
+ 
 def bin_to_hexa(binary):
-    """
-        returns hexadecimal equivalent
-        Author: 
-    """
+  """
+      returns hexadecimal equivalent
+      Author: Edgard Jara
+  """
 
+  #first we need to create the decimal point variable
+  hex_point = "." 
+  # if the binary number is a float, we need to split it into two parts and add them together
+  if (hex_point in binary):
+    whole,fract = binary.split(hex_point)
+    a = binwhole_to_hex_helper(whole)
+    b = binfract_to_hex_helper(fract)
+    return (a) +"."+ (b)
+  else:
+    c = binwhole_to_hex_helper(binary)
+    return (c)
 
+def binwhole_to_hex_helper(whole):
+  
+  deci_string =""
+  
+  while (len(whole) % 4 != 0):
+    whole = "0" + whole
+  for min_i in range(0 , len(whole) - 1, 4):
+    deci = 0
+    count=0
+    deci_string_loop = ""
+    bin_group = whole[min_i:min_i + 4]
+    for num in reversed(bin_group):
+      deci += 2**count * int(num)
+      count += 1
+    if deci < 10:
+      deci_string_loop=str(deci)
+    else:
+      deci_string_loop= dictionary.get(deci)
+    deci_string = deci_string + deci_string_loop
+  return deci_string
+        
+  
+def binfract_to_hex_helper(fraction):
+  
+  #this function will take the fractional part of the binary number and convert it to a hexadecimal number
+
+  #create a variable to store the hexadecimal number
+  fract_string = ""
+
+  #if length of fraction is less than 4, we need to add 0's to the end of the fraction
+  while (len(fraction) % 4 != 0):
+    fraction += "0"
+
+  #loop through the fraction and convert each 4 bit group to a hexadecimal number
+  for min_i in range(0 , len(fraction) - 1, 4):
+    count = 0
+    fract = 0
+    fract_string_loop = ""
+    bin_group = fraction[min_i:min_i + 4]
+
+    #loop through the 4 bit group and convert it to a decimal number
+    for num in reversed(bin_group):
+      fract += 2**count * int(num)
+      count += 1
+    if fract < 10:
+      fract_string_loop = str(fract)
+    else:
+      fract_string_loop = dictionary.get(fract)
+
+    #add the hexadecimal number to the string
+    fract_string = fract_string +fract_string_loop
+  return fract_string
 
 
 def deci_to_bin(num):
@@ -192,3 +295,16 @@ def deci_to_hexa(num):
 
 
 # code execution 
+user_input = prompt_user()
+num = user_input[0]
+
+if (user_input[1]):
+    # number is binary
+    print(f"octal: {bin_to_octal(num)}")
+    print(f"decimal: {bin_to_deci(num)}")
+    print(f"hexadecimal: {bin_to_hexa(num)}")
+else:
+    # number is decimal
+    print(deci_to_bin(num))
+    print(deci_to_octal(num))
+    print(deci_to_hexa(num))
