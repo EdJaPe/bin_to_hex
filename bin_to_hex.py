@@ -11,6 +11,15 @@ map = {'y': True, 'n': False}
 binary_check = ('.', '0', '1')
 decimal_check = ('.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
 
+dictionary = {                      #Create a dictionary map to convert numbers >9 & <16 to letters
+    10 : "A",
+    11 : "B",
+    12 : "C",
+    13 : "D",
+    14 : "E",
+    15 : "F",
+}
+
 def prompt_user() -> tuple:
     """ 
         prompts user for number and type
@@ -173,16 +182,28 @@ def bin_to_hexa(binary):
     return (c)
 
 def binwhole_to_hex_helper(whole):
+  """
+      returns hexadecimal equivalent
+      Author: Edgard Jara
+  """
+  ##This helper function will convert the whole part of the binary number to hex
+
   
+  #create a variable to store the hex number
   deci_string =""
   
+  #if length of whole is not divisible by 4, we need to add 0's to the start of the whole
   while (len(whole) % 4 != 0):
     whole = "0" + whole
+
+  #loop through the whole and convert each 4 bit group   
   for min_i in range(0 , len(whole) - 1, 4):
     deci = 0
     count=0
     deci_string_loop = ""
     bin_group = whole[min_i:min_i + 4]
+
+    #loop through the 4 bit group and convert it to a hexadecimal number
     for num in reversed(bin_group):
       deci += 2**count * int(num)
       count += 1
@@ -190,11 +211,17 @@ def binwhole_to_hex_helper(whole):
       deci_string_loop=str(deci)
     else:
       deci_string_loop= dictionary.get(deci)
+
+    #add the hexadecimal number to the string
     deci_string = deci_string + deci_string_loop
   return deci_string
         
   
 def binfract_to_hex_helper(fraction):
+  """
+      returns hexadecimal equivalent
+      Author: Edgard Jara
+  """
   
   #this function will take the fractional part of the binary number and convert it to a hexadecimal number
 
@@ -226,77 +253,253 @@ def binfract_to_hex_helper(fraction):
   return fract_string
 
 
-def deci_to_bin(num):
-    """
-        returns binary equivalent
-        Author: Jacob Bueno
-    """
-    numList = []                    #Create a list to put our remainder values
-    binString = 'Binary: '          #Create a string to hold our final converted number
-    num = int(num)                  #Convert input to integer
-
-    while num/2 >= 0.01:            #While loop set to repeat as long as the number/2 is greater than or equal to 0.01, if the value is > or = to 0.01 this means we can divide further 
-        numList.append(num%2)           #Divide our number by 2 and put the remainder in our remainder list
-        num = int(num/2)                #Replaced our number with the integer value of number/2 to update it for the next iteration of the while loop
-    numList.reverse()               #Reverse the remainder list since our number is currently backwards
-    for x in numList:               #Add each element of the remainder list to our final string
-        binString += str(x)
-
-    return binString                #Return final string
-
-def deci_to_octal(num):
-    """
-        returns octal equivalent
-        Author: Jacob Bueno
-    """
-    numList = []                    #Create a list to put our remainder values
-    octString = 'Octal: '           #Create a string to hold our final converted number
-    num = int(num)                  #Convert input to integer
-
-    while num/8 >= 0.01:            #While loop set to repeat as long as the number/8 is greater than or equal to 0.01, if the value is > or = to 0.01 this means we can divide further 
-        numList.append(num%8)           #Divide our number by 8 and put the remainder in our remainder list
-        num = int(num/8)                #Replaced our number with the integer value of number/8 to update it for the next iteration of the while loop
-    numList.reverse()               #Reverse the remainder list since our number is currently backwards
-    for x in numList:               #Add each element of the remainder list to our final string
-        octString += str(x)
-
-    return octString                #Return final string
-
-
-dictionary = {                      #Create a dictionary map to convert numbers >9 & <16 to letters
-    10 : "A",
-    11 : "B",
-    12 : "C",
-    13 : "D",
-    14 : "E",
-    15 : "F",
-}
-
 def deci_to_hexa(num):
     """
         returns hexadecimal equivalent
         Author: Jacob Bueno
     """
-    numList = []                                    #Create a list to put our remainder values
-    hexString = 'Hexadecimal: '                     #Create a string to hold our final converted number
-    num = int(num)                                  #Convert input to integer
+    decimal = "."   #used later to seperate decimal numbers
 
-    while num/16 >= 0.01:                           #While loop set to repeat as long as the number/16 is greater than or equal to 0.01, if the value is > or = to 0.01 this means we can divide further 
-        if (num%16) > 9:                                #Divide our number by 16 and check if the remainder is greater than 9
-            numList.append(dictionary.get(num%16))      #If true add the corresponding letter based on our dictionary map         
+    #if there is a decimal entered process decimal and integer seperatley else process integer    
+    if (decimal in num):                       
+        whole, fractal = num.split(decimal) 
+        a = deci_to_hexa_whole(whole)
+        b = deci_to_hexa_fractal(fractal)
+        return a + "."+ b
+    else:
+        c = deci_to_hexa_whole(num)
+        return c
+
+def deci_to_hexa_whole(num):
+    """
+        returns hexadecimal equivalent
+        Author: Jacob Bueno
+    """
+    numList = []    #Create a list to put our remainder values
+    hexString = ''  #Create a string to hold our final converted number
+    num = int(num)  #Convert input to integer
+
+    #while there is a remainder, add remainder to list then change number to number / 16, repeat until there is no remainder
+    while num%16 != num:                           
+        if (num%16) > 9:                                
+            numList.append(dictionary.get(num%16))              
         else:
-            numList.append(num%16)                      #If false we divide our number by 16 and put the remainder in our remainder list 
-        num = int(num/16)                           #Replaced our number with the integer value of number/8 to update it for the next iteration of the while loop
-    numList.reverse()                               #Reverse the remainder list since our number is currently backwards
-    for x in numList:                               #Add each element of the remainder list to our final string
+            numList.append(num%16)                      
+        num = int(num/16)                           
+
+    #add the last remainder excluded from the while loop                          
+    if (num%16) > 9:                                
+        numList.append(dictionary.get(num%16))              
+    else:
+        numList.append(num%16) 
+
+    numList.reverse()   #reverse the remainder list 
+
+    #convert remander list to final string 
+    for x in numList:                               
         hexString += str(x)
 
-    return hexString                                #Return final string
+    return hexString    #return final conversion (string)              
+
+def deci_to_hexa_fractal(num):
+    """
+        returns hexadecimal equivalent
+        Author: Jacob Bueno
+    """
+    numList = []    #Create a list to put our values
+    hexString = ''  #Create a string to hold our final converted number
+    num = float(f"0.{num}")     #convert number to decimal
+    
+    #stop calculating after 5 tries (this stops the code from running infinitly in case a recuring number occurs)
+    for x in range(5):
+
+        #split the number into its integer and decimal values
+        splitNum = str(num).split(".")
+        whole = splitNum[0]
+        decimal = float(f"0.{splitNum[1]}")
+
+        #if decimal is 0 add corresponding integer value to our list
+        if decimal == 0:
+            if int(whole) > 9:
+                numList.append(dictionary.get(int(whole)))
+            else:
+                numList.append(splitNum[0])
+            break
+
+        #else if decimal !=0, still add the integer value using tempNumber to seperate the integer and change number to number * 16 for next iteration
+        else:
+            tempNumber = str(decimal * 16).split(".")
+            if int(tempNumber[0]) > 9:
+                numList.append(dictionary.get(int(tempNumber[0])))
+            else:
+                numList.append(tempNumber[0])
+            if int(tempNumber[1]) == 0:     #if tempNumber ever gets a decimal that is == 0 then we know we're done we can break
+                break
+            num = decimal * 16
+
+    #convert remander list to final string
+    for x in numList:                              
+        hexString += str(x)
+
+    return hexString    #return final conversion (string) 
+
+def deci_to_octal(num):
+    """
+        returns hexadecimal equivalent
+        Author: Jacob Bueno
+    """
+    decimal = "."   #used later to seperate decimal numbers
+
+    #if there is a decimal entered process decimal and integer seperatley else process integer 
+    if (decimal in num):
+        whole, fractal = num.split(decimal)
+        a = deci_to_oct_whole(whole)
+        b = deci_to_oct_fractal(fractal)
+        return a + "."+ b
+    else:
+        c = deci_to_oct_whole(num)
+        return c
+
+def deci_to_oct_whole(num):
+    """
+        returns octal equivalent
+        Author: Jacob Bueno
+    """
+    numList = []    #Create a list to put our remainder values
+    octString = ''  #Create a string to hold our final converted number
+    num = int(num)  #Convert input to integer
+    
+    #while there is a remainder, add remainder to list then change number to number / 8, repeat until there is no remainder
+    while num%8 != num:             
+        numList.append(num%8)         
+        num = int(num/8)                
+
+    numList.append(num%8)   #add the last remainder excluded from the while loop 
+    numList.reverse()   #reverse the remainder list   
+
+    #convert remander list to final string 
+    for x in numList:               
+        octString += str(x)
+
+    return octString    #return final conversion (string)                
+
+def deci_to_oct_fractal(num):
+    """
+        returns hexadecimal equivalent
+        Author: Jacob Bueno
+    """
+    numList = []    #Create a list to put our remainder values
+    octString = ''  #Create a string to hold our final converted number
+    num = float(f"0.{num}")     #convert number to decimal
+
+    #stop calculating after 5 tries (this stops the code from running infinitly in case a recuring number occurs)
+    for x in range(5):
+
+        #split the number into its integer and decimal values
+        splitNum = str(num).split(".")
+        whole = splitNum[0]
+        decimal = float(f"0.{splitNum[1]}")
+
+        #if decimal is 0 add the integer value to our list
+        if decimal == 0:
+            numList.append(splitNum[0])
+            break
+        #else if decimal !=0, still add the integer value using tempNumber to seperate the integer and change number to number * 8 for next iteration
+        else:
+            tempNumber = str(decimal * 8).split(".")
+            numList.append(tempNumber[0])
+            if int(tempNumber[1]) == 0:     #if tempNumber ever gets a decimal that is == 0 then we know we're done we can break
+                break
+            num = decimal * 8
+
+    #convert remander list to final string
+    for x in numList:                               
+        octString += str(x)
+
+    return octString    #return final conversion (string)
+
+def deci_to_bin(num):
+    """
+        returns hexadecimal equivalent
+        Author: Jacob Bueno
+    """
+    decimal = "."   #used later to seperate decimal numbers
+    
+    #if there is a decimal entered process decimal and integer seperatley else process integer 
+    if (decimal in num):
+        whole, fractal = num.split(decimal)
+        a = deci_to_bin_whole(whole)
+        b = deci_to_bin_fractal(fractal)
+        return a + "."+ b
+    else:
+        c = deci_to_oct_whole(num)
+        return c
+
+def deci_to_bin_whole(num):
+    """
+        returns octal equivalent
+        Author: Jacob Bueno
+    """
+    numList = []    #Create a list to put our remainder values
+    binString = ''  #Create a string to hold our final converted number
+    num = int(num)  #Convert input to integer
+    
+    #while there is a remainder, add remainder to list then change number to number / 2, repeat until there is no remainder
+    while num%2 != num:            
+        numList.append(num%2)          
+        num = int(num/2)                
+
+    numList.append(num%2)   #add the last remainder excluded from the while loop
+    numList.reverse()   #reverse the remainder list
+
+    #convert remander list to final string
+    for x in numList:               
+        binString += str(x)
+
+    return binString    #return final conversion (string)             
+
+def deci_to_bin_fractal(num):
+    """
+        returns hexadecimal equivalent
+        Author: Jacob Bueno
+    """
+    numList = []    #Create a list to put our remainder values
+    binString = ''  #Create a string to hold our final converted number
+    num = float(f"0.{num}")     #convert number to decimal
+
+    #stop calculating after 5 tries (this stops the code from running infinitly in case a recuring number occurs)
+    for x in range(5):
+
+        #split the number into its integer and decimal values
+        y = str(num).split(".")
+        whole = y[0]
+        decimal = float(f"0.{y[1]}")
+        
+        #if decimal is 0 add the integer value to our list
+        if decimal == 0:
+            numList.append(y[0])
+            break
+        #else if decimal !=0, still add the integer value using tempNumber to seperate the integer and change number to number * 2 for next iteration
+        else:
+            t = str(decimal * 2).split(".")
+            numList.append(t[0])
+            if int(t[1]) == 0:      #if tempNumber ever gets a decimal that is == 0 then we know we're done we can break
+                break
+            num = decimal * 2
+
+    #convert remander list to final string
+    for x in numList:                               
+        binString += str(x)
+
+    return binString    #return final conversion (string)                            
 
 
 # code execution 
 user_input = prompt_user()
 num = user_input[0]
+
+
+
 
 if (user_input[1]):
     # number is binary
@@ -305,6 +508,6 @@ if (user_input[1]):
     print(f"hexadecimal: {bin_to_hexa(num)}")
 else:
     # number is decimal
-    print(deci_to_bin(num))
-    print(deci_to_octal(num))
-    print(deci_to_hexa(num))
+    print(f"Binary: {deci_to_bin(num)}")
+    print(f"Octal: {deci_to_octal(num)}")
+    print(f"Hexadecimal: {deci_to_hexa(num)}")
